@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>अज़ोला और हरा चारा - सुरक्षित प्रोजेक्ट (ऑडियो सुधार सहित)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f1f8e9;
+            font-family: 'Segoe UI', 'Noto Sans Devanagari', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #1f2e1f;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 40, 0, 0.12);
+            padding: 30px 35px;
+            border: 1px solid #c8e6c9;
+        }
+        h1 {
+            font-size: 2.3rem;
+            color: #1b5e20;
+            text-align: center;
+            border-bottom: 4px dashed #a5d6a7;
+            padding-bottom: 18px;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+        h1 small {
+            display: block;
+            font-size: 1.1rem;
+            color: #2e7d32;
+            font-weight: 400;
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---------- लॉक स्क्रीन ---------- */
+        .lock-screen {
+            background: #fff8e1;
+            border: 3px solid #ffb74d;
+            border-radius: 40px;
+            padding: 38px 28px;
+            text-align: center;
+            margin: 30px 0 10px 0;
+            box-shadow: 0 10px 25px rgba(200, 120, 0, 0.15);
+        }
+        .lock-icon {
+            font-size: 4.5rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .lock-screen h2 {
+            font-size: 1.6rem;
+            color: #5d3a00;
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+            display: block;
+            border-radius: 0;
+        }
+        .lock-screen p {
+            color: #6d4c00;
+            margin-bottom: 22px;
+            font-size: 1rem;
+        }
+        .lock-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            align-items: center;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        .lock-input-group input {
+            padding: 14px 20px;
+            border-radius: 40px;
+            border: 2px solid #ffb74d;
+            font-size: 1.15rem;
+            width: 230px;
+            background: white;
+            outline: none;
+            font-family: inherit;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        .lock-input-group input:focus {
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.15);
+        }
+        .lock-input-group button {
+            background: #2e7d32;
+            border: none;
+            color: white;
+            padding: 14px 38px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            box-shadow: 0 6px 14px rgba(0, 80, 0, 0.25);
+        }
+        .lock-input-group button:hover {
+            background: #1b5e20;
+            transform: scale(1.02);
+        }
+        .lock-message {
+            margin-top: 16px;
+            font-weight: 600;
+            font-size: 1rem;
+            min-height: 28px;
+        }
+        .lock-error { color: #b71c1c; }
+        .lock-success { color: #1b5e20; }
+
+        .hidden-section { display: none !important; }
+
+        /* ---------- ऑडियो प्लेयर ---------- */
+        .audio-wrapper {
+            background: #e8f5e9;
+            border-radius: 60px;
+            padding: 12px 18px 12px 26px;
+            margin: 12px 0 28px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            border: 2px solid #a5d6a7;
+            box-shadow: 0 4px 10px rgba(0, 60, 0, 0.08);
+        }
+        .audio-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #1b5e20;
+            font-size: 1.1rem;
+        }
+        .audio-label span { font-size: 1.8rem; }
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .audio-btn {
+            background: #2e7d32;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 12px rgba(0, 80, 0, 0.25);
+            padding: 0;
+            line-height: 1;
+        }
+        .audio-btn:hover:not(:disabled) {
+            background: #1b5e20;
+            transform: scale(1.05);
+        }
+        .audio-btn:disabled {
+            background: #9e9e9e;
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .audio-btn.secondary {
+            background: #f9a825;
+            color: #3e2e00;
+            box-shadow: 0 6px 12px rgba(200, 120, 0, 0.3);
+        }
+        .audio-btn.secondary:hover:not(:disabled) {
+            background: #f57f17;
+        }
+        .audio-btn.test-btn {
+            background: #0288d1;
+            width: auto;
+            padding: 0 20px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            gap: 6px;
+        }
+        .audio-btn.test-btn:hover:not(:disabled) {
+            background: #01579b;
+        }
+        .audio-status {
+            background: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e4a1e;
+            border: 1px solid #b9e6b9;
+            min-width: 150px;
+            text-align: center;
+        }
+        .speech-rate {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid #b9e6b9;
+        }
+        .speech-rate label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2e4a2e;
+        }
+        .speech-rate input {
+            width: 110px;
+            accent-color: #2e7d32;
+            cursor: pointer;
+        }
+
+        /* ---------- सामान्य स्टाइल ---------- */
+        h2 {
+            font-size: 1.8rem;
+            color: #1b5e20;
+            margin: 28px 0 16px 0;
+            padding-left: 12px;
+            border-left: 10px solid #66bb6a;
+            background: #e8f5e9;
+            padding: 10px 18px;
+            border-radius: 0 40px 40px 0;
+            display: inline-block;
+        }
+        h3 {
+            font-size: 1.4rem;
+            color: #2e7d32;
+            margin: 22px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h3 i { font-size: 1.6rem; }
+        .card {
+            background: #f9fff9;
+            border: 1px solid #b9e6b9;
+            border-radius: 24px;
+            padding: 22px 26px;
+            margin: 24px 0;
+            box-shadow: 0 4px 10px rgba(0, 30, 0, 0.04);
+            transition: 0.2s;
+        }
+        .card:hover {
+            border-color: #66bb6a;
+            box-shadow: 0 8px 18px rgba(60, 120, 60, 0.1);
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 20px 0;
+        }
+        ul, ol {
+            padding-left: 28px;
+            margin: 12px 0;
+        }
+        li { margin: 8px 0; }
+        .routine-box {
+            background: #fefdf6;
+            border-radius: 16px;
+            padding: 16px 22px;
+            margin: 12px 0;
+            border: 1px dashed #bbb;
+        }
+        .money-free {
+            background: #e8f5e9;
+            border-radius: 40px;
+            padding: 12px 26px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e4a1e;
+            text-align: center;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        th {
+            background: #2e7d32;
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+        td {
+            padding: 12px 14px;
+            background: #ffffff;
+            border-bottom: 1px solid #d4edda;
+        }
+        tr:last-child td { border-bottom: none; }
+        .note {
+            background: #fff3e0;
+            padding: 14px 20px;
+            border-radius: 20px;
+            color: #4e342e;
+            border-left: 8px solid #ffb74d;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #c8e6c9;
+            color: #336633;
+            font-size: 0.95rem;
+        }
+        .emoji-big {
+            font-size: 1.7rem;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 18px; }
+            h1 { font-size: 1.7rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            h2 { font-size: 1.5rem; }
+            .audio-wrapper { flex-direction: column; align-items: stretch; }
+            .audio-controls { justify-content: center; }
+            .lock-input-group { flex-direction: column; }
+            .lock-input-group input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        🌿 अज़ोला और हरा चारा (बिना मिट्टी) 
+        <small>4 बकरियों के लिए घरेलू प्रोजेक्ट — हाइड्रोपोनिक + अज़ोला</small>
+    </h1>
+
+    <p style="font-size: 1.15rem; background: #e1f5e1; padding: 14px 22px; border-radius: 30px; text-align: center; margin-bottom: 10px;" id="bannerText">
+        <strong>“महीने का दिन-प्रतिदिन प्लान”</strong> — घर पर ही हरा चारा और प्रोटीन युक्त अज़ोला उगाएँ, लगभग शून्य खर्च।
+    </p>
+
+    <!-- लॉक स्क्रीन -->
+    <div class="lock-screen" id="lockScreen">
+        <span class="lock-icon">🔒</span>
+        <h2>सुरक्षित सामग्री</h2>
+        <p>कृपया सुरक्षा कोड डालें। सही कोड डालने के बाद ही बैनर के नीचे की जानकारी देखी और सुनी जा सकती है।</p>
+        <div class="lock-input-group">
+            <input type="password" id="lockCodeInput" placeholder="सुरक्षा कोड" autocomplete="off" inputmode="text">
+            <button id="unlockBtn">अनलॉक करें</button>
+        </div>
+        <div class="lock-message" id="lockMessage"></div>
+    </div>
+
+    <!-- सुरक्षित सामग्री -->
+    <div id="protectedContent" class="hidden-section">
+        <!-- ऑडियो प्लेयर -->
+        <div class="audio-wrapper">
+            <div class="audio-label">
+                <span>🎧</span> बैनर के नीचे का टेक्स्ट सुनें
+            </div>
+            <div class="audio-controls">
+                <button class="audio-btn" id="playBtn" title="सुनना शुरू करें">▶️</button>
+                <button class="audio-btn secondary" id="pauseBtn" title="रोकें" disabled>⏸️</button>
+                <button class="audio-btn secondary" id="resumeBtn" title="जारी रखें" disabled>⏯️</button>
+                <button class="audio-btn secondary" id="stopBtn" title="पूरा रोकें" disabled>⏹️</button>
+                <button class="audio-btn test-btn" id="testBtn" title="छोटा ऑडियो टेस्ट करें">🔊 टेस्ट</button>
+                <div class="speech-rate">
+                    <label>गति:</label>
+                    <input type="range" id="rateSlider" min="0.6" max="1.5" step="0.1" value="0.95">
+                </div>
+                <div class="audio-status" id="audioStatus">तैयार</div>
+            </div>
+        </div>
+
+        <!-- जिसे पढ़ना/सुनना है -->
+        <div id="contentToRead">
+            <h2>📅 हफ्ता 1: सेटअप और शुरुआत (First Week)</h2>
+            <div class="card">
+                <h3>🔹 दिन 1 से 3:</h3>
+                <ul>
+                    <li>घर के किसी छोटे से कोने या छत पर एक छोटा सा <strong>अज़ोला का पिट</strong> (प्लास्टिक शीट लगाकर मिट्टी-गोबर के साथ) तैयार करें और उसमें स्टार्टर कल्चर डालें।</li>
+                    <li>साथ ही, <strong>हाइड्रोपोनिक चारा</strong> उगाने के लिए छोटे प्लास्टिक के ट्रे या रैक का जुगाड़ करें। थोड़ा सा गेहूँ या मक्का (लगभग 500 ग्राम रोज़ के हिसाब से शुरू में) भिगोने का काम शुरू करें।</li>
+                </ul>
+                <h3>🔹 दिन 4 से 7:</h3>
+                <ul>
+                    <li>हाइड्रोपोनिक तरीके से उगे हुए चारे की पहली फसल 7-8 दिनों में तैयार हो जाएगी। इसे बकरियों को देना शुरू करें।</li>
+                    <li>अज़ोला भी धीरे-धीरे फैलना शुरू हो जाएगा।</li>
+                </ul>
+            </div>
+
+            <h2>🔄 हफ्ता 2, 3 और 4: लगातार उत्पादन और फीडिंग रूटीन</h2>
+            <p>एक बार सिस्टम सेट होने के बाद आपको रोज़ यह रूटीन फॉलो करनी है:</p>
+
+            <div class="routine-box" style="border-left: 8px solid #f9a825;">
+                <h3 style="margin-top: 0; color: #b26a00;">☀️ रोज़ाना सुबह (Morning Routine)</h3>
+                <ul>
+                    <li>हाइड्रोपोनिक ट्रे पर साफ़ पानी का छिड़काव करें।</li>
+                    <li>जो हरा चारा 7-8 दिन का होकर तैयार हो चुका है, उसे जड़ समेत बाहर निकालें और साफ़ करके 4 बकरियों में बाँट कर खिलाएँ।</li>
+                    <li>उसी खाली ट्रे में नया भिगा हुआ अनाज (गेहूँ/मक्का) दोबारा जमा दें ताकि साइकल चलती रहे।</li>
+                </ul>
+            </div>
+
+            <div class="routine-box" style="border-left: 8px solid #ef6c00;">
+                <h3 style="margin-top: 0; color: #b85e00;">🌤️ रोज़ाना दोपहर (Afternoon Routine)</h3>
+                <ul>
+                    <li>अज़ोला के पिट से 1 किलो ताज़ा अज़ोला निकालें।</li>
+                    <li>उसे साफ़ पानी में धोकर बकरियों को दें ताकि उन्हें भरपूर प्रोटीन मिले।</li>
+                </ul>
+            </div>
+
+            <div class="routine-box" style="border-left: 8px solid #5d4037;">
+                <h3 style="margin-top: 0; color: #4e342e;">🌙 रोज़ाना शाम (Evening Routine)</h3>
+                <ul>
+                    <li>बकरियों को थोड़ा सा सूखा भूसा (जो आपने महीने की शुरुआत में सस्ते में खरीदा था) और थोड़ा सा नमक/मिनरल मिला कर दें ताकि उनका पेट भरे और पाचन ठीक रहे।</li>
+                </ul>
+            </div>
+
+            <h2>🌱 हाइड्रोपोनिक फ़ोडर (बिना मिट्टी का हरा चारा) कैसे उगाएँ?</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>📦 आपको क्या सामान चाहिए होगा?</h3>
+                    <ul>
+                        <li><strong>अनाज:</strong> सबसे सस्ता और अच्छा अनाज मक्का या गेहूँ है (आप खराब या सस्ता टूटा हुआ गेहूँ/मक्का भी ले सकते हैं)।</li>
+                        <li><strong>ट्रे या बर्तन:</strong> छोटे प्लास्टिक के क्रेट, ट्रे, या घर में रखे कोई भी छोटे प्लास्टिक के डिब्बे जिनमें नीचे छोटे छेद हों ताकि फालतू पानी निकल सके।</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⏳ 7 दिन का चक्र (Step-by-Step)</h3>
+                    <ul>
+                        <li><strong>दिन 1 (भिगोना):</strong> लगभग 500 ग्राम से 1 किलो मक्का या गेहूँ लें। अच्छी तरह साफ़ करके किसी बाल्टी या बर्तन में साफ़ पानी में 24 घंटे के लिए भिगो कर रख दें।</li>
+                        <li><strong>दिन 2 (अंकुरण):</strong> 24 घंटे बाद पानी निकाल दें और उस अनाज को किसी सूती या जूट के कपड़े में बाँध कर किसी अंधेरे कोने में 24 घंटे के लिए रख दें। इससे अनाज में छोटे-छोटे अंकुर निकल आएँगे।</li>
+                        <li><strong>दिन 3 से 7 (ट्रे में उगाना):</strong> अंकुरित अनाज को प्लास्टिक की ट्रे में बराबर मोटाई (लगभग 1 इंच) में फैलाकर रख दें। इस ट्रे को घर के किसी छायादार स्थान पर रख दें।</li>
+                        <li><strong>पानी का छिड़काव:</strong> दिन में 2 से 3 बार हाथ से या स्प्रे बोतल की मदद से इस पर साफ़ पानी का छिड़काव करें ताकि नमी बनी रहे।</li>
+                        <li><strong>दिन 7 या 8 (तैयार चारा):</strong> 7 से 8 दिनों में यह अनाज आपस में जुड़कर 8 से 10 इंच लंबा घना हरा चारा बन जाता है।</li>
+                        <li><strong>इस्तेमाल:</strong> इसे ट्रे से पूरी जड़ समेत निकालें, थोड़ा साफ़ करें और अपनी बकरियों को खिला दें। बकरियाँ इसकी जड़, तना और पत्ती सब कुछ बड़े चाव से खाती हैं।</li>
+                        <li><strong>चक्र:</strong> जैसे ही एक ट्रे का चारा खत्म हो, दूसरी ट्रे शुरू कर दें ताकि बकरियों को रोज़ लगातार हरा चारा मिलता रहे।</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>💧 अज़ोला की खेती कैसे करें?</h2>
+            <p><strong>अज़ोला</strong> एक तरह का जल-पौधा (water fern) है जो तेज़ी से बढ़ता है और इसमें प्रोटीन की मात्रा बहुत हाई होती है।</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>🧰 आपको क्या सामान चाहिए होगा?</h3>
+                    <ul>
+                        <li><strong>पॉलिथीन शीट:</strong> एक मोटी प्लास्टिक की शीट (सिलपॉलिन या टारपॉलिन) — लगभग 6 फीट लंबी और 3 फीट चौड़ी।</li>
+                        <li><strong>मिट्टी और गोबर:</strong> 10-15 किलो अच्छी उपजाऊ मिट्टी और 1-2 किलो सड़ी हुई गोबर की खाद।</li>
+                        <li><strong>स्टार्टर कल्चर:</strong> थोड़ा सा अज़ोला का बीज (किसी पास के पशुपालन केंद्र या पुराने अज़ोला उगाने वाले से थोड़ा सा मिल जाएगा)।</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🪴 स्टेप-बाय-स्टेप तरीका</h3>
+                    <ol>
+                        <li><strong>गड्ढा या फ्रेम बनाएँ:</strong> ज़मीन पर लगभग 6 फीट लंबा, 3 फीट चौड़ा और 6-8 इंच गहरा छोटा सा गड्ढा खोद लें (या ईंटों से बाउंड्री बना लें)।</li>
+                        <li><strong>प्लास्टिक शीट बिछाएँ:</strong> गड्ढे के अंदर प्लास्टिक की मोटी शीट इस तरह बिछाएँ कि किनारे बाहर रहें, ताकि पानी नीचे ज़मीन में न जाए।</li>
+                        <li><strong>मिट्टी और गोबर का घोल:</strong> मिट्टी को अच्छी तरह छान कर प्लास्टिक के ऊपर 1-2 इंच की परत में बिछा दें। एक बाल्टी में 1-2 किलो गोबर की खाद और थोड़ा सा पानी मिलाकर अच्छा पतला घोल बना लें और उसे मिट्टी के ऊपर डाल दें।</li>
+                        <li><strong>पानी भरें:</strong> अब इसमें लगभग 4 से 6 इंच तक साफ़ पानी भर दें, ताकि मिट्टी और गोबर पानी में अच्छी तरह घुल जाएँ और पानी थोड़ा धुँधला हो जाए।</li>
+                        <li><strong>अज़ोला के बीज डालें:</strong> अब इसमें अज़ोला का स्टार्टर कल्चर (बीज) छिड़क कर डालें और ऊपर से हल्का पानी का छिड़काव कर दें।</li>
+                        <li><strong>देख-रेख और बढ़ाव:</strong> इस टैंक/बेड पर हल्की धूप या छाँव होनी चाहिए (बहुत तेज़ी की धूप से अज़ोला जल सकता है, इसलिए ऊपर हरी नेट या पेड़ की छाँव हो तो बेहतर है)। 7 से 10 दिनों के अंदर अज़ोला पूरे पानी की सतह पर एक घनी हरी चटाई की तरह फैल जाएगा।</li>
+                        <li><strong>निकालना (Harvesting):</strong> जब अज़ोला पूरा फैल जाए, तो रोज़ या हर दूसरे दिन छलनी (strainer) या हाथ से आधा अज़ोला निकाल लें और बाकी को छोड़ दें ताकि वह फिर से बढ़ता रहे। निकाले हुए अज़ोला को साफ़ पानी से धो कर अपनी बकरियों को खाने के लिए दें।</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h2>📋 आपका डेली का काम (रोज़ का नियम)</h2>
+            <table>
+                <thead>
+                    <tr><th>समय</th><th>कार्य</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>सुबह</strong></td><td>हाइड्रोपोनिक ट्रे वाले चारे पर पानी का छिड़काव करें और जो बैच तैयार है उसे काटकर बकरियों को दें। खाली ट्रे में नया अनाज भिगो कर लगा दें।</td></tr>
+                    <tr><td><strong>दोपहर</strong></td><td>अज़ोला बेड से थोड़ा सा अज़ोला निकालें, धो कर बकरियों को प्रोटीन के रूप में दें।</td></tr>
+                    <tr><td><strong>शाम</strong></td><td>थोड़ा सा सूखा भूसा (जो घर में हो) बकरियों को दे दें ताकि पाचन ठीक रहे।</td></tr>
+                </tbody>
+            </table>
+
+            <h2>💰 इस रूटीन के फायदे और आपका खर्च</h2>
+            <div class="card" style="background: #e8f5e9;">
+                <ul style="font-size: 1.1rem;">
+                    <li><span class="emoji-big">💸</span> <strong>खर्च न के बराबर:</strong> आपको बाहर से महंगे दाने या रोज़ाना हरा चारा खरीदने की कोई ज़रूरत नहीं पड़ेगी। सिर्फ़ शुरुआत में थोड़ा सा गेहूँ/मक्का और अज़ोला का स्टार्टर लाने के लिए मिनिमल खर्च होगा, उसके बाद सब कुछ घर पर ही फ्री में बनेगा।</li>
+                    <li><span class="emoji-big">🌦️</span> <strong>मौसम या पत्तियों की टेंशन खत्म:</strong> चाहे सर्दी हो, गर्मी हो या पेड़ों पर पत्तियाँ न हों, आपका यह घर का प्लांट बिना मिट्टी हरा चारा और अज़ोला लगातार देता रहेगा।</li>
+                    <li><span class="emoji-big">🐐</span> <strong>बकरियों की सेहत:</strong> इस हाई-प्रोटीन और पोषण युक्त आहार से बकरियाँ तेज़ी से स्वस्थ रहेंगी और उनमें बीमारियाँ नहीं आएँगी।</li>
+                </ul>
+                <div style="text-align: center; margin-top: 16px;">
+                    <span class="money-free">✨ लगभग शून्य खर्च में हरा चारा + अज़ोला ✨</span>
+                </div>
+            </div>
+
+            <div class="note">
+                <strong>🌱 छोटी शुरुआत करें:</strong> आप इसे छोटे स्टार पर एक ट्रे और एक छोटे अज़ोला बेड से शुरू करें, जैसे-जैसे आपको अनुभव हो, इसका दायरा थोड़ा बढ़ा सकते हैं। 
+                <br><br>
+                <strong>💚 4 बकरियों के लिए पर्याप्त:</strong> इस तरह बिना एक भी रुपया बाहर खर्च किए, आप घर पर ही दोनों चीज़ें लगातार उगा सकते हैं और अपनी 4 बकरियों का पेट आसानी से भर सकते हैं।
+            </div>
+
+            <div style="background: #d0e8d0; border-radius: 28px; padding: 22px 28px; margin-top: 30px;">
+                <h3 style="margin-top: 0; color: #1b5e20; text-align: center;">📌 एक नज़र में पूरा प्लान</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 18px; justify-content: center;">
+                    <div style="background: white; border-radius: 40px; padding: 12px 24px; font-weight: 600;">🌾 हाइड्रोपोनिक: 7–8 दिन</div>
+                    <div style="background: white; border-radius: 40px; padding: 12px 24px; font-weight: 600;">💧 अज़ोला: 7–10 दिन में फैलाव</div>
+                    <div style="background: white; border-radius: 40px; padding: 12px 24px; font-weight: 600;">🐐 रोज़: सुबह + दोपहर + शाम</div>
+                    <div style="background: white; border-radius: 40px; padding: 12px 24px; font-weight: 600;">💸 खर्च: बस शुरुआती सामान</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        🌿 घर पर अज़ोला और हाइड्रोपोनिक चारा — आत्मनिर्भर बकरी पालन 🌿<br>
+        <span style="font-size: 0.85rem;">(हिंदी में विस्तृत प्रोजेक्ट — सुधारित ऑडियो संस्करण)</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        const CORRECT_CODE = 'tamir7122';
+
+        // ---------- एलिमेंट्स ----------
+        const lockScreen = document.getElementById('lockScreen');
+        const protectedContent = document.getElementById('protectedContent');
+        const lockCodeInput = document.getElementById('lockCodeInput');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const lockMessage = document.getElementById('lockMessage');
+
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const testBtn = document.getElementById('testBtn');
+        const rateSlider = document.getElementById('rateSlider');
+        const audioStatus = document.getElementById('audioStatus');
+        const contentToRead = document.getElementById('contentToRead');
+
+        // ---------- स्पीच सिंथेसिस सेटअप ----------
+        const synth = window.speechSynthesis;
+        let utterance = null;
+        let voicesLoaded = false;
+        let voices = [];
+        let isPaused = false;
+        let currentText = '';
+        let userHasInteracted = false;
+
+        // सपोर्ट चेक
+        if (!synth) {
+            audioStatus.textContent = '❌ ब्राउज़र सपोर्ट नहीं';
+            if (playBtn) playBtn.disabled = true;
+            if (testBtn) testBtn.disabled = true;
+        }
+
+        // वॉइस लोड करने का फंक्शन (Chrome बग के लिए कई बार ट्राई)
+        function loadVoices() {
+            if (!synth) return;
+            voices = synth.getVoices();
+            if (voices.length > 0) {
+                voicesLoaded = true;
+                console.log('✅ वॉइस लोड हो गईं:', voices.length);
+                // हिंदी वॉइस चेक
+                const hindi = voices.find(v => v.lang === 'hi-IN' || v.lang.startsWith('hi'));
+                console.log('🇮🇳 हिंदी वॉइस:', hindi ? hindi.name : 'नहीं मिली, fallback इस्तेमाल होगा');
+            }
+        }
+
+        // वॉइस लोड करें (कई तरीकों से)
+        loadVoices();
+        if (synth && synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
+        // Chrome के लिए बार-बार कोशिश
+        setTimeout(loadVoices, 200);
+        setTimeout(loadVoices, 800);
+        setTimeout(loadVoices, 2000);
+
+        // ---------- यूज़र इंटरैक्शन ट्रैक ----------
+        document.addEventListener('click', () => {
+            userHasInteracted = true;
+            // एक बार क्लिक के बाद Chrome में स्पीच इंजन "unlock" हो जाता है
+            if (synth && voices.length === 0) loadVoices();
+        }, { once: true });
+
+        // ---------- टेक्स्ट निकालें ----------
+        function getReadableText() {
+            const clone = contentToRead.cloneNode(true);
+            const remove = clone.querySelectorAll('script, style');
+            remove.forEach(el => el.remove());
+            let text = clone.innerText || clone.textContent || '';
+            text = text.replace(/\s+/g, ' ').trim();
+            return text;
+        }
+
+        // ---------- बटन स्टेट ----------
+        function updateButtons(state) {
+            if (!playBtn) return;
+            if (state === 'idle' || state === 'stopped') {
+                playBtn.disabled = false;
+                pauseBtn.disabled = true;
+                resumeBtn.disabled = true;
+                stopBtn.disabled = true;
+                audioStatus.textContent = 'तैयार';
+            } else if (state === 'playing') {
+                playBtn.disabled = true;
+                pauseBtn.disabled = false;
+                resumeBtn.disabled = true;
+                stopBtn.disabled = false;
+                audioStatus.textContent = '🔊 चल रहा है...';
+            } else if (state === 'paused') {
+                playBtn.disabled = true;
+                pauseBtn.disabled = true;
+                resumeBtn.disabled = false;
+                stopBtn.disabled = false;
+                audioStatus.textContent = '⏸️ रुका हुआ';
+            } else if (state === 'loading') {
+                playBtn.disabled = true;
+                pauseBtn.disabled = true;
+                resumeBtn.disabled = true;
+                stopBtn.disabled = true;
+                audioStatus.textContent = '⏳ लोड हो रहा...';
+            }
+        }
+
+        // ---------- स्पीच शुरू करें (सुधारित) ----------
+        function startSpeech(text) {
+            if (!synth) {
+                alert('आपके ब्राउज़र में स्पीच सिंथेसिस सपोर्ट नहीं है। कृपया Chrome, Edge या Safari का उपयोग करें।');
+                return;
+            }
+
+            // अगर पहले से चल रहा है तो रोकें
+            if (synth.speaking || synth.pending) {
+                synth.cancel();
+            }
+
+            // टेक्स्ट तय करें
+            const speakText = text || getReadableText();
+            if (!speakText || speakText.length < 2) {
+                alert('पढ़ने के लिए कोई टेक्स्ट नहीं मिला।');
+                return;
+            }
+
+            // नई utterance बनाएँ
+            utterance = new SpeechSynthesisUtterance(speakText);
+            utterance.lang = 'hi-IN';
+            utterance.rate = parseFloat(rateSlider.value) || 0.95;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            // वॉइस चुनें (हिंदी प्राथमिकता, फिर भारतीय अंग्रेज़ी, फिर डिफ़ॉल्ट)
+            if (!voicesLoaded || voices.length === 0) {
+                voices = synth.getVoices();
+            }
+
+            let selectedVoice = null;
+            if (voices.length > 0) {
+                // 1. हिंदी वॉइस
+                selectedVoice = voices.find(v => v.lang === 'hi-IN');
+                // 2. कोई भी हिंदी
+                if (!selectedVoice) selectedVoice = voices.find(v => v.lang.startsWith('hi'));
+                // 3. भारतीय अंग्रेज़ी
+                if (!selectedVoice) selectedVoice = voices.find(v => v.lang === 'en-IN');
+                // 4. कोई भी अंग्रेज़ी
+                if (!selectedVoice) selectedVoice = voices.find(v => v.lang.startsWith('en'));
+                // 5. डिफ़ॉल्ट
+                if (!selectedVoice) selectedVoice = voices[0];
+            }
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+                console.log('🎙️ इस्तेमाल हो रही वॉइस:', selectedVoice.name, '(' + selectedVoice.lang + ')');
+            }
+
+            // इवेंट हैंडलर्स
+            utterance.onstart = () => {
+                isPaused = false;
+                updateButtons('playing');
+                console.log('▶️ स्पीच शुरू');
+            };
+
+            utterance.onend = () => {
+                isPaused = false;
+                updateButtons('idle');
+                utterance = null;
+                console.log('✅ स्पीच खत्म');
+            };
+
+            utterance.onerror = (e) => {
+                console.error('❌ स्पीच एरर:', e.error || e);
+                // interrupted/canceled को अनदेखा करें (ये सामान्य हैं)
+                if (e.error !== 'interrupted' && e.error !== 'canceled' && e.error !== 'audio-busy') {
+                    audioStatus.textContent = '⚠️ त्रुटि: ' + (e.error || 'unknown');
+                } else {
+                    updateButtons('idle');
+                }
+                utterance = null;
+            };
+
+            utterance.onpause = () => {
+                isPaused = true;
+                updateButtons('paused');
+            };
+
+            utterance.onresume = () => {
+                isPaused = false;
+                updateButtons('playing');
+            };
+
+            // Chrome bug workaround: cancel() के बाद थोड़ा इंतज़ार
+            // ताकि इंजन नई utterance के लिए तैयार हो जाए
+            updateButtons('loading');
+            setTimeout(() => {
+                try {
+                    synth.speak(utterance);
+                } catch (err) {
+                    console.error('speak() में एरर:', err);
+                    audioStatus.textContent = '⚠️ फिर से कोशिश करें';
+                    updateButtons('idle');
+                }
+            }, 250);
+        }
+
+        // ---------- टेस्ट फंक्शन ----------
+        function testAudio() {
+            if (!synth) {
+                alert('स्पीच सिंथेसिस सपोर्ट नहीं है।');
+                return;
+            }
+            // अगर चल रहा है तो रोकें
+            if (synth.speaking) synth.cancel();
+
+            setTimeout(() => {
+                const testText = 'नमस्ते! यह ऑडियो टेस्ट है। अगर आप यह सुन रहे हैं तो ऑडियो काम कर रहा है।';
+                const testUtter = new SpeechSynthesisUtterance(testText);
+                testUtter.lang = 'hi-IN';
+                testUtter.rate = 1.0;
+
+                // वॉइस चुनें
+                const v = synth.getVoices();
+                let hv = v.find(x => x.lang === 'hi-IN') || v.find(x => x.lang.startsWith('hi')) || v.find(x => x.lang === 'en-IN') || v[0];
+                if (hv) testUtter.voice = hv;
+
+                testUtter.onstart = () => {
+                    audioStatus.textContent = '🔊 टेस्ट चल रहा...';
+                };
+                testUtter.onend = () => {
+                    audioStatus.textContent = '✅ टेस्ट सफल';
+                    setTimeout(() => { audioStatus.textContent = 'तैयार'; }, 1500);
+                };
+                testUtter.onerror = (e) => {
+                    audioStatus.textContent = '❌ टेस्ट फेल';
+                    console.error('टेस्ट एरर:', e);
+                };
+
+                synth.speak(testUtter);
+            }, 200);
+        }
+
+        // ---------- अनलॉक ----------
+        function tryUnlock() {
+            const entered = lockCodeInput.value.trim();
+            if (entered === CORRECT_CODE) {
+                lockScreen.classList.add('hidden-section');
+                protectedContent.classList.remove('hidden-section');
+                lockMessage.textContent = '';
+                lockCodeInput.value = '';
+                // वॉइस फिर से लोड करें
+                loadVoices();
+                updateButtons('idle');
+                lockCodeInput.blur();
+                console.log('🔓 अनलॉक सफल');
+            } else {
+                lockMessage.textContent = '❌ गलत सुरक्षा कोड! कृपया पुनः प्रयास करें।';
+                lockMessage.className = 'lock-message lock-error';
+                lockCodeInput.value = '';
+                lockCodeInput.focus();
+            }
+        }
+
+        // ---------- इवेंट लिसनर्स ----------
+        unlockBtn.addEventListener('click', tryUnlock);
+        lockCodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                tryUnlock();
+            }
+        });
+
+        // प्ले बटन
+        playBtn.addEventListener('click', () => {
+            console.log('▶️ प्ले बटन क्लिक');
+            if (synth.speaking) {
+                synth.cancel();
+                setTimeout(() => startSpeech(), 300);
+            } else {
+                startSpeech();
+            }
+        });
+
+        // पॉज़
+        pauseBtn.addEventListener('click', () => {
+            if (synth.speaking && !synth.paused) {
+                synth.pause();
+                isPaused = true;
+                updateButtons('paused');
+            }
+        });
+
+        // रिज़्यूम
+        resumeBtn.addEventListener('click', () => {
+            if (synth.paused) {
+                synth.resume();
+                isPaused = false;
+                updateButtons('playing');
+            }
+        });
+
+        // स्टॉप
+        stopBtn.addEventListener('click', () => {
+            if (synth.speaking || synth.pending) {
+                synth.cancel();
+                isPaused = false;
+                utterance = null;
+                updateButtons('idle');
+                audioStatus.textContent = '⏹️ रोका गया';
+                setTimeout(() => {
+                    if (!synth.speaking) audioStatus.textContent = 'तैयार';
+                }, 1000);
+            }
+        });
+
+        // टेस्ट बटन
+        testBtn.addEventListener('click', testAudio);
+
+        // रेट स्लाइडर
+        rateSlider.addEventListener('change', () => {
+            if (synth.speaking && !synth.paused) {
+                // अगर चल रहा है तो रीस्टार्ट करें नई रेट के साथ
+                synth.cancel();
+                setTimeout(() => startSpeech(), 300);
+            }
+        });
+
+        // पेज अनलोड पर स्पीच रोकें
+        window.addEventListener('beforeunload', () => {
+            if (synth.speaking) synth.cancel();
+        });
+
+        // शुरुआती स्टेटस
+        updateButtons('idle');
+        lockCodeInput.focus();
+
+        console.log('📢 ऑडियो सिस्टम तैयार। वॉइस लोड हो रही हैं...');
+    })();
+</script>
+</body>
+</html>
